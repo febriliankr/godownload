@@ -7,16 +7,15 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/febriliankr/godownload/entities"
 )
 
-type DownloadToPathResponse struct {
-	Size     int64
-	FilePath string
-}
+// Download To Path accepts "fullFileURL" as the download url and "downloadToPath" as where the file will be downloaded to. The "downloadToPath" parameter is in this format "tmp/downloads", without any '/' at the end. Use Download(fullFileURL, ".") to download to the root directory.
+func Download(fileURL string, downloadToPath string) (entities.DownloadToPathResponse, error) {
 
-// Download To Path accepts "fullFileURL" as the download url and "downloadToPath" as where the file will be downloaded to. The "downloadToPath" parameter is in this format "tmp/downloads", without any '/' at the end. Use DownloadToPath(fullFileURL, ".") to download to the root directory.
-func DownloadToPath(fileURL string, downloadToPath string) (DownloadToPathResponse, error) {
-	var response DownloadToPathResponse
+	var response entities.DownloadToPathResponse
+
 	parsedURL, err := url.Parse(fileURL)
 	if err != nil {
 		return response, err
@@ -56,9 +55,8 @@ func DownloadToPath(fileURL string, downloadToPath string) (DownloadToPathRespon
 
 	defer file.Close()
 
-	response = DownloadToPathResponse{
-		Size:     size,
-		FilePath: destinationFilePath,
-	}
+	response.Size = size
+	response.FilePath = destinationFilePath
+
 	return response, nil
 }
