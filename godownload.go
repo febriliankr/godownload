@@ -3,6 +3,7 @@ package godownload
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -25,6 +26,14 @@ func Download(fileURL string, downloadToPath string) (entities.DownloadToPathRes
 	fileName := segments[len(segments)-1]
 
 	destinationFilePath := fmt.Sprintf("%s/%s", downloadToPath, fileName)
+
+	headSize, err := getContentLength(fileURL)
+
+	if err != nil {
+		return response, err
+	}
+
+	log.Println(headSize)
 
 	// Create a blank file
 	file, err := os.Create(destinationFilePath)
@@ -59,4 +68,16 @@ func Download(fileURL string, downloadToPath string) (entities.DownloadToPathRes
 	response.FilePath = destinationFilePath
 
 	return response, nil
+}
+
+func getContentLength(url string) (int64, error) {
+
+	var contentLength int64
+	res, err := http.Head(url)
+	if err != nil {
+		return contentLength, err
+	}
+
+	contentLength = res.ContentLength
+	return contentLength, nil
 }
