@@ -6,7 +6,7 @@ Simple library to download file from url and write them to your destined local d
 
 Install as a library
 
-`go get github.com/joho/godotenv`
+`go get github.com/febriliankr/godownload`
 
 ## Usage
 
