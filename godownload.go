@@ -1,6 +1,7 @@
 package godownload
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,9 +13,8 @@ import (
 	"github.com/febriliankr/godownload/entities"
 )
 
-// Download To Path accepts "fullFileURL" as the download url and "downloadToPath" as where the file will be downloaded to. The "downloadToPath" parameter is in this format "tmp/downloads", without any '/' at the end. Use Download(fullFileURL, ".") to download to the root directory.
-func Download(fileURL string, downloadToPath string) (entities.DownloadToPathResponse, error) {
-
+// Download To Path accepts "fullFileURL" as the download url and "downloadToPath" as where the file will be downloaded to. The "downloadToPath" parameter is in this format "tmp/downloads", without any '/' at the end. Use Download(fullFileURL, ".", ) to download to the root directory.
+func Download(fileURL string, downloadToPath string, maxFileSizeInMB int64) (entities.DownloadToPathResponse, error) {
 	var response entities.DownloadToPathResponse
 
 	parsedURL, err := url.Parse(fileURL)
@@ -28,6 +28,10 @@ func Download(fileURL string, downloadToPath string) (entities.DownloadToPathRes
 	destinationFilePath := fmt.Sprintf("%s/%s", downloadToPath, fileName)
 
 	headSize, err := getContentLength(fileURL)
+
+	if headSize > maxFileSizeInMB*1000*1000 {
+		return response, errors.New("file size is bigger than maximum file size")
+	}
 
 	if err != nil {
 		return response, err
